@@ -1,63 +1,43 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello-dotnet2
+  name: webapi
   labels:
-    app: aspnetapp2
+    app: weather-forecast
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: aspnetapp2
+      service: webapi
   template:
     metadata:
-      annotations:
-        prometheus.io/scrape: 'true'
-        prometheus.io/path: '/metrics'
-        prometheus.io/port: '52325'
-        prometheus.io/scheme: 'http'    
       labels:
-        app: aspnetapp2
+        app: weather-forecast
+        service: webapi
     spec:
       containers:
-      - name: aspnetapp
-        image: dotnetnonroot.azurecr.io/aspnetapp
-        ports:
-        - containerPort: 8080
-        env:
-        - name: DOTNET_DiagnosticPorts
-          value: /diag/dotnet-monitor.sock
-        volumeMounts:
-        - mountPath: /diag
-          name: diagvol        
-        resources:
-          requests:
-            memory: "60Mi"
-            cpu: "250m" # same as 0.25
-          limits:
-            memory: "100Mi"
-            cpu: "500m" # same as 0.5
-        livenessProbe:
-          httpGet:
-            path: "/healthz"
-            port: 8080
-        securityContext:
-          allowPrivilegeEscalation: false
-          runAsNonRoot: true
-      volumes:
-      - name: diagvol
-        emptyDir: {}
+        - name: webapi
+          image: exploredocker.azurecr.io/webapi:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:80
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: hello-dotnet2
+  name: webapi
+  labels:
+    app: weather-forecast
+    service: webapi
 spec:
   type: LoadBalancer
-  selector:
-    app: aspnetapp2
   ports:
-  - name: http
-    protocol: TCP
-    port: 80
-    targetPort: 8080
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  selector:
+    service: webapi
