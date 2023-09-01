@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello-dotnet
+  name: hello-dotnet2
   labels:
-    app: aspnetapp
+    app: aspnetapp2
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: aspnetapp
+      app: aspnetapp2
   template:
     metadata:
       annotations:
@@ -51,11 +51,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: hello-dotnet
+  name: hello-dotnet2
 spec:
   type: LoadBalancer
   selector:
-    app: aspnetapp
+    app: aspnetapp2
   ports:
   - name: http
     protocol: TCP
