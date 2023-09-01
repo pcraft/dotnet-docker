@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: webapi
+  name: webapp
   labels:
     app: weather-forecast
 spec:
   replicas: 1
   selector:
     matchLabels:
-      service: webapi
+      service: webapp
   template:
     metadata:
       labels:
         app: weather-forecast
-        service: webapi
+        service: webapp
     spec:
       containers:
-        - name: webapi
-          image: exploredocker.azurecr.io/webapi:v1
+        - name: webapp
+          image: exploredocker.azurecr.io/webapp:v1
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
@@ -25,14 +25,16 @@ spec:
           env:
             - name: ASPNETCORE_URLS
               value: http://+:80
+            - name: WebApiBaseAddress
+              value: http://webapi
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: webapi
+  name: webapp
   labels:
     app: weather-forecast
-    service: webapi
+    service: webapp
 spec:
   type: LoadBalancer
   ports:
@@ -40,4 +42,4 @@ spec:
       targetPort: 80
       protocol: TCP
   selector:
-    service: webapi
+    service: webapp
