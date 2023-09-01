@@ -44,6 +44,9 @@ spec:
         securityContext:
           allowPrivilegeEscalation: false
           runAsNonRoot: true
+      volumes:
+      - name: diagvol
+        emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
